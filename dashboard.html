@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOLVIA - Employee Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .bg-gradient-dark {
+            background-color: #111827;
+            background-image: linear-gradient(to top right, #0d121c, #111827);
+        }
+        .hover-lift-dark {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .hover-lift-dark:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.2), 0 4px 6px -4px rgb(0 0 0 / 0.2);
+        }
+    </style>
+</head>
+<body class="bg-gradient-dark text-gray-300">
+
+    <div class="min-h-screen flex flex-col">
+        <!-- Header Navigation -->
+        <header class="bg-gray-900/80 backdrop-blur-sm shadow-lg sticky top-0 z-10">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16">
+                    <div class="flex-shrink-0">
+                        <div class="flex items-center space-x-2">
+                            <a href="index.html">
+                              <img src="ChatGPT_Image_Aug_7__2025__01_22_37_PM-removebg-preview.png" alt="Solvia Logo" class="h-32 w-auto">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <span class="text-sm font-medium hidden sm:block" id="welcome-message">Welcome, Abhilash!</span>
+                        <button class="p-2 rounded-full hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-indigo-500" aria-label="Profile">
+                            <svg class="h-6 w-6 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"></path></svg>
+                        </button>
+                        <button id="signout-button" class="p-2 rounded-full hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-indigo-500" aria-label="Logout">
+                            <svg class="h-6 w-6 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9"></path></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="space-y-8">
+                <div class="bg-gray-800/50 rounded-xl shadow-lg p-6 text-center border border-gray-700">
+                    <h2 class="text-2xl font-bold text-white mb-2">How are you feeling today?</h2>
+                    <p class="text-gray-400 mb-4">A quick check-in helps you stay mindful.</p>
+                    <div class="flex justify-center space-x-4">
+                        <button onclick="alert('Glad to hear you are feeling great!')" class="p-4 bg-gray-700 rounded-full hover:bg-green-500/20 hover:scale-110 transform transition-all duration-200 border border-gray-600" aria-label="Feeling Happy">
+                            <span class="text-4xl">😊</span>
+                        </button>
+                        <button onclick="alert('Thanks for checking in. Remember to take a break if you need one.')" class="p-4 bg-gray-700 rounded-full hover:bg-yellow-500/20 hover:scale-110 transform transition-all duration-200 border border-gray-600" aria-label="Feeling Neutral">
+                            <span class="text-4xl">😐</span>
+                        </button>
+                        <button onclick="alert('Sorry to hear that. Consider visiting the AI Wellness Chat if you want to talk.')" class="p-4 bg-gray-700 rounded-full hover:bg-red-500/20 hover:scale-110 transform transition-all duration-200 border border-gray-600" aria-label="Feeling Sad">
+                            <span class="text-4xl">😔</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-2 bg-indigo-600 text-white rounded-xl shadow-xl p-8 flex flex-col items-start justify-between hover-lift-dark">
+                        <div>
+                            <h3 class="text-3xl font-bold mb-2">AI Wellness Check-in ✨</h3>
+                            <p class="text-indigo-200 mb-6">Talk through what's on your mind in a safe, private, and judgment-free conversation. Your chat is completely confidential.</p>
+                        </div>
+                        <a href="ai-chat.html" class="bg-white text-indigo-600 font-bold py-3 px-6 rounded-lg hover:bg-indigo-100 transition-colors duration-200">Start Conversation</a>
+                    </div>
+                    
+                    <div id="wellness-tip-card" class="bg-gray-800/50 rounded-xl shadow-lg p-8 flex flex-col justify-center items-center text-center hover-lift-dark border border-gray-700">
+                        <h3 class="text-xl font-bold text-white mb-2">Daily Wellness Tip ✨</h3>
+                        <p id="wellness-tip-text" class="text-gray-400">Loading your daily inspiration...</p>
+                    </div>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold text-white mb-4">Explore the De-Stress Zone</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <a href="/games" class="block bg-gray-800/50 rounded-xl shadow-lg p-6 hover-lift-dark border border-gray-700">
+                            <div class="flex items-center space-x-4">
+                                <div class="p-3 bg-teal-500/10 rounded-lg border border-teal-500/20">
+                                    <svg class="h-6 w-6 text-teal-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" /></svg>
+                                </div>
+                                <div>
+                                    <h4 class="text-lg font-bold text-white">Mindful Games</h4>
+                                    <p class="text-sm text-gray-400">Quick puzzles & challenges.</p>
+                                </div>
+                            </div>
+                        </a>
+                        <a href="/music" class="block bg-gray-800/50 rounded-xl shadow-lg p-6 hover-lift-dark border border-gray-700">
+                            <div class="flex items-center space-x-4">
+                                <div class="p-3 bg-purple-500/10 rounded-lg border border-purple-500/20">
+                                    <svg class="h-6 w-6 text-purple-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m9 9 10.5-3m0 6.553v3.75a2.25 2.25 0 0 1-1.632 2.163l-1.32.377a1.803 1.803 0 1 1-.99-3.467l2.31-.66a2.25 2.25 0 0 0 1.632-2.163Zm0 0V2.25L9 5.25v10.303m0 0v3.75a2.25 2.25 0 0 1-1.632 2.163l-1.32.377a1.803 1.803 0 0 1-.99-3.467l2.31-.66A2.25 2.25 0 0 0 9 15.553Z" /></svg>
+                                </div>
+                                <div>
+                                    <h4 class="text-lg font-bold text-white">Calming Music</h4>
+                                    <p class="text-sm text-gray-400">Focus and relaxation playlists.</p>
+                                </div>
+                            </div>
+                        </a>
+                        <a href="/meditation" class="block bg-gray-800/50 rounded-xl shadow-lg p-6 hover-lift-dark border border-gray-700">
+                            <div class="flex items-center space-x-4">
+                                <div class="p-3 bg-sky-500/10 rounded-lg border border-sky-500/20">
+                                    <svg class="h-6 w-6 text-sky-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9A2.25 2.25 0 0 0 13.5 5.25h-9a2.25 2.25 0 0 0-2.25 2.25v9A2.25 2.25 0 0 0 4.5 18.75Z" /></svg>
+                                </div>
+                                <div>
+                                    <h4 class="text-lg font-bold text-white">Guided Meditation ✨</h4>
+                                    <p class="text-sm text-gray-400">AI-powered custom scripts.</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Function to fetch and display the daily wellness tip
+        async function getWellnessTip() {
+            const tipTextElement = document.getElementById('wellness-tip-text');
+            try {
+                const prompt = "Provide a short, encouraging, and actionable wellness tip (2-3 sentences max) suitable for a corporate employee feeling stressed. The tone should be supportive and positive.";
+                const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
+                const apiKey = ""; // Leave empty
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                   throw new Error('Network response was not ok');
+                }
+
+                const result = await response.json();
+                if (result.candidates && result.candidates.length > 0) {
+                    const tip = result.candidates[0].content.parts[0].text;
+                    tipTextElement.textContent = `"${tip}"`;
+                } else {
+                    tipTextElement.textContent = "Could not fetch a tip right now. Remember to take a deep breath!";
+                }
+            } catch (error) {
+                console.error("Error fetching wellness tip:", error);
+                tipTextElement.textContent = "Take a moment to stretch and breathe deeply.";
+            }
+        }
+
+        // Fetch the tip when the page loads
+        window.addEventListener('load', getWellnessTip);
+
+        // Handle logged-in user and sign out
+        document.addEventListener('DOMContentLoaded', () => {
+            const loggedInUser = localStorage.getItem('loggedInUser');
+            const welcomeMessageElement = document.getElementById('welcome-message');
+            if (welcomeMessageElement) {
+                if (loggedInUser) {
+                    welcomeMessageElement.textContent = `Welcome, ${loggedInUser}!`;
+                } else {
+                    welcomeMessageElement.textContent = `Welcome, Guest!`;
+                }
+            }
+
+            const signoutButton = document.getElementById('signout-button');
+            if (signoutButton) {
+                signoutButton.addEventListener('click', () => {
+                    localStorage.removeItem('loggedInUser');
+                    window.location.href = 'index.html'; // Redirect to index page
+                });
+            }
+        });
+    </script>
+</body>
+</html>

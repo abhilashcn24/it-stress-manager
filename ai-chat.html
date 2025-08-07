@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOLVIA - AI Wellness Chat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .bg-gradient-dark {
+            background-color: #111827;
+            background-image: linear-gradient(to top right, #0d121c, #111827);
+        }
+    </style>
+</head>
+<body class="bg-gradient-dark text-gray-300">
+
+    <div class="min-h-screen flex flex-col">
+        <!-- Header Navigation -->
+        <header class="bg-gray-900/80 backdrop-blur-sm shadow-lg sticky top-0 z-10">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16">
+                    <div class="flex-shrink-0">
+                        <div class="flex items-center space-x-2">
+                            <a href="index.html">
+                              <img src="ChatGPT_Image_Aug_7__2025__01_22_37_PM-removebg-preview.png" alt="Solvia Logo" class="h-32 w-auto">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <a href="dashboard.html" class="p-2 rounded-full hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-indigo-500" aria-label="Dashboard">
+                            <svg class="h-6 w-6 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955a.75.75 0 011.06 0l8.955 8.955M3 11.25V21a.75.75 0 00.75.75h5.25a.75.75 0 00.75-.75v-6a.75.75 0 01.75-.75h3a.75.75 0 01.75.75v6a.75.75 0 00.75.75h5.25a.75.75 0 00.75-.75V11.25m-18 0A23.96 23.96 0 0112 3c2.33 0 4.555.336 6.75 1.25" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col">
+            <div id="chat-container" class="bg-gray-800/50 rounded-xl shadow-lg p-6 flex-grow flex flex-col border border-gray-700">
+                <div id="chat-window" class="flex-grow mb-4 overflow-y-auto">
+                    <!-- Chat messages will be appended here -->
+                </div>
+                <div id="chat-input" class="flex items-center">
+                    <input type="text" id="user-input" class="flex-grow bg-gray-700 text-white rounded-l-lg p-3 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Type your message...">
+                    <a href="quiz.html" id="quiz-button" class="bg-teal-600 text-white font-bold py-3 px-6 hover:bg-teal-700 transition-colors duration-200">Quiz Buzz</a>
+                    <button id="send-button" class="bg-indigo-600 text-white font-bold py-3 px-6 rounded-r-lg hover:bg-indigo-700 transition-colors duration-200">Send</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const chatWindow = document.getElementById('chat-window');
+        const userInput = document.getElementById('user-input');
+        const sendButton = document.getElementById('send-button');
+
+        const quotes = [
+            {
+                "content": "The best way to predict the future is to create it.",
+                "author": "Peter Drucker"
+            },
+            {
+                "content": "The only way to do great work is to love what you do.",
+                "author": "Steve Jobs"
+            },
+            {
+                "content": "Believe you can and you're halfway there.",
+                "author": "Theodore Roosevelt"
+            },
+            {
+                "content": "Success is not final, failure is not fatal: it is the courage to continue that counts.",
+                "author": "Winston Churchill"
+            },
+            {
+                "content": "The mind is everything. What you think you become.",
+                "author": "Buddha"
+            }
+        ];
+
+        function getWelcomeMessage() {
+            const randomIndex = Math.floor(Math.random() * quotes.length);
+            const randomQuote = quotes[randomIndex];
+            appendMessage('bot', `Welcome! Here is a thought for the day: "${randomQuote.content}" - ${randomQuote.author}`);
+        }
+
+        async function sendMessage() {
+            const userMessage = userInput.value.trim();
+            if (userMessage === '') return;
+
+            appendMessage('user', userMessage);
+            userInput.value = '';
+
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: userMessage })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const result = await response.json();
+                appendMessage('bot', result.message);
+
+            } catch (error) {
+                console.error("Error fetching bot response:", error);
+                appendMessage('bot', 'I am currently unable to respond. Please try again later.');
+            }
+        }
+
+        function appendMessage(sender, message) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('mb-4');
+
+            let formattedMessage = message;
+            if (sender === 'bot') {
+                formattedMessage = formattedMessage.replace(/\n/g, '<br>');
+            }
+
+            messageElement.innerHTML = `
+                <div class="font-bold ${sender === 'user' ? 'text-indigo-400' : 'text-green-400'}">${sender === 'user' ? 'You' : 'Solvia AI'}</div>
+                <div class="text-white">${formattedMessage}</div>
+            `;
+            chatWindow.appendChild(messageElement);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        const quizButton = document.getElementById('quiz-button');
+
+        function startQuiz() {
+            const quizPrompt = "I'd like to take a stress level quiz. Please ask me some questions to assess my current stress levels.";
+            userInput.value = quizPrompt;
+            sendMessage();
+        }
+
+        sendButton.addEventListener('click', sendMessage);
+        quizButton.addEventListener('click', startQuiz);
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', getWelcomeMessage);
+    </script>
+</body>
+</html>

@@ -1,0 +1,88 @@
+{
+  "name": "PestPro Chatbot Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "chat",
+        "options": {}
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "return { query: $json.body.message };"
+      },
+      "name": "Extract Message",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "authentication": "openAiApi",
+        "resource": "embedding",
+        "model": "text-embedding-3-small",
+        "text": "{{$node[\"Extract Message\"].json[\"query\"]}}"
+      },
+      "name": "OpenAI Embedding",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 3,
+      "position": [850, 300]
+    },
+    {
+      "parameters": {
+        "authentication": "pineconeApi",
+        "operation": "query",
+        "index": "pestpro-index",
+        "topK": 3,
+        "vector": "{{$node[\"OpenAI Embedding\"].json[\"data\"][0][\"embedding\"]}}"
+      },
+      "name": "Pinecone Vector Search",
+      "type": "n8n-nodes-base.pinecone",
+      "typeVersion": 1,
+      "position": [1050, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "const context = $json.matches.map(m => m.metadata.text).join(\"\n\n\");\nconst prompt = `You are a helpful pest control assistant for PestPro. Answer the user's question based on the following context. If the answer is not in the context, say you don't have enough information.\n\nContext:\n${context}\n\nQuestion: ${$node[\"Extract Message\"].json[\"query\"]}`;"
+      },
+      "name": "Format Prompt",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [1250, 300]
+    },
+    {
+      "parameters": {
+        "authentication": "geminiApi",
+        "model": "gemini-pro",
+        "prompt": "{{$node[\"Format Prompt\"].json}}"
+      },
+      "name": "Gemini Chat Model",
+      "type": "n8n-nodes-base.googleGemini",
+      "typeVersion": 1,
+      "position": [1450, 300]
+    },
+    {
+      "parameters": {
+        "responseCode": 200,
+        "responseData": "={{ { \"text\": $node[\"Gemini Chat Model\"].json[\"candidates\"][0][\"content\"][\"parts\"][0][\"text\"] } }}",
+        "options": {}
+      },
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1650, 300]
+    }
+  ],
+  "connections": {
+    "Webhook": { "main": [ [ { "node": "Extract Message", "type": "main" } ] ] },
+    "Extract Message": { "main": [ [ { "node": "OpenAI Embedding", "type": "main" } ] ] },
+    "OpenAI Embedding": { "main": [ [ { "node": "Pinecone Vector Search", "type": "main" } ] ] },
+    "Pinecone Vector Search": { "main": [ [ { "node": "Format Prompt", "type": "main" } ] ] },
+    "Format Prompt": { "main": [ [ { "node": "Gemini Chat Model", "type": "main" } ] ] },
+    "Gemini Chat Model": { "main": [ [ { "node": "Respond to Webhook", "type": "main" } ] ] }
+  }
+}

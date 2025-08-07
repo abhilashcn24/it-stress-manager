@@ -1,0 +1,6 @@
+openai
+pinecone-client
+beautifulsoup4
+requests
+flask
+python-dotenv
