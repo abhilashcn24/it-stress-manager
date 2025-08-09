@@ -25,7 +25,7 @@
                 <div class="flex items-center justify-between h-16">
                     <div class="flex-shrink-0">
                         <div class="flex items-center space-x-2">
-                            <a href="index.html">
+                            <a href="welcome.html">
                               <img src="ChatGPT_Image_Aug_7__2025__01_22_37_PM-removebg-preview.png" alt="Solvia Logo" class="h-32 w-auto">
                             </a>
                         </div>
@@ -134,16 +134,7 @@
             chatWindow.scrollTop = chatWindow.scrollHeight;
         }
 
-        const quizButton = document.getElementById('quiz-button');
-
-        function startQuiz() {
-            const quizPrompt = "I'd like to take a stress level quiz. Please ask me some questions to assess my current stress levels.";
-            userInput.value = quizPrompt;
-            sendMessage();
-        }
-
         sendButton.addEventListener('click', sendMessage);
-        quizButton.addEventListener('click', startQuiz);
         userInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 sendMessage();

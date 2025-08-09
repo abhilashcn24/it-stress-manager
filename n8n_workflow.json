@@ -1,5 +1,5 @@
 {
-  "name": "PestPro Chatbot Workflow",
+  "name": "Solvia Chatbot Workflow",
   "nodes": [
     {
       "parameters": {
@@ -36,7 +36,7 @@
       "parameters": {
         "authentication": "pineconeApi",
         "operation": "query",
-        "index": "pestpro-index",
+        "index": "solvia-index",
         "topK": 3,
         "vector": "{{$node[\"OpenAI Embedding\"].json[\"data\"][0][\"embedding\"]}}"
       },
@@ -47,7 +47,7 @@
     },
     {
       "parameters": {
-        "functionCode": "const context = $json.matches.map(m => m.metadata.text).join(\"\n\n\");\nconst prompt = `You are a helpful pest control assistant for PestPro. Answer the user's question based on the following context. If the answer is not in the context, say you don't have enough information.\n\nContext:\n${context}\n\nQuestion: ${$node[\"Extract Message\"].json[\"query\"]}`;"
+        "functionCode": "const context = $json.matches.map(m => m.metadata.text).join(\"\\n\\n\");\nconst prompt = `You are a friendly and empathetic workplace wellness assistant for an application called Solvia. Answer the user's question based on the following context. If the answer is not in the context, say you don't have enough information.\n\nContext:\n${context}\n\nQuestion: ${$node[\"Extract Message\"].json[\"query\"]}\n\nGuidelines:\n- If the user asks for stress relief: suggest a suitable game, calming music, or meditation activity from Solvia.\n- If the user asks about stress tracking: explain how to take the quiz and how results are sent to their manager with charts.\n- If the user asks for general wellness advice: give practical, friendly tips.\n- Always maintain a warm, encouraging, and supportive tone.`;\nreturn { prompt };"
       },
       "name": "Format Prompt",
       "type": "n8n-nodes-base.function",
@@ -58,7 +58,7 @@
       "parameters": {
         "authentication": "geminiApi",
         "model": "gemini-pro",
-        "prompt": "{{$node[\"Format Prompt\"].json}}"
+        "prompt": "{{$node[\"Format Prompt\"].json[\"prompt\"]}}"
       },
       "name": "Gemini Chat Model",
       "type": "n8n-nodes-base.googleGemini",

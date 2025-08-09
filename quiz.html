@@ -1,271 +1,165 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOLVIA - Stress Level Quiz</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        .bg-gradient-dark {
-            background-color: #111827;
-            background-image: linear-gradient(to top right, #0d121c, #111827);
-        }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SOLVIA - Stress Level Quiz (fixed)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .bg-gradient-dark {
+      background-color: #111827;
+      background-image: linear-gradient(to top right, #0d121c, #111827);
+    }
+  </style>
 </head>
 <body class="bg-gradient-dark text-gray-300">
+  <div class="min-h-screen flex flex-col items-center justify-center">
+    <div class="bg-gray-800/50 rounded-xl shadow-lg p-8 max-w-2xl w-full border border-gray-700">
+      <h1 class="text-3xl font-bold text-white mb-6 text-center">🧘 Time for a Quick Vibe Check! 🧘</h1>
 
-    <div class="min-h-screen flex flex-col items-center justify-center">
-        <div class="bg-gray-800/50 rounded-xl shadow-lg p-8 max-w-2xl w-full border border-gray-700">
-            <h1 class="text-3xl font-bold text-white mb-6 text-center">🧘 Time for a Quick Vibe Check! 🧘</h1>
-            <form id="quiz-form">
-                <div class="mb-6">
-                    <label class="block text-lg font-medium text-white mb-2">1. How often have you felt like a human pretzel from stress? 🥨</label>
-                    <div class="flex items-center space-x-4">
-                        <input type="radio" id="q1-1" name="q1" value="0" class="hidden peer">
-                        <label for="q1-1" class="p-3 rounded-lg border border-gray-600 cursor-pointer peer-checked:bg-indigo-600 peer-checked:text-white">😎 Cool as a cucumber</label>
-                        <input type="radio" id="q1-2" name="q1" value="1" class="hidden peer">
-                        <label for="q1-2" class="p-3 rounded-lg border border-gray-600 cursor-pointer peer-checked:bg-indigo-600 peer-checked:text-white">🤔 A little tangled</label>
-                        <input type="radio" id="q1-3" name="q1" value="2" class="hidden peer">
-                        <label for="q1-3" class="p-3 rounded-lg border border-gray-600 cursor-pointer peer-checked:bg-indigo-600 peer-checked:text-white">😅 Pretty twisted</label>
-                        <input type="radio" id="q1-4" name="q1" value="3" class="hidden peer">
-                        <label for="q1-4" class="p-3 rounded-lg border border-gray-600 cursor-pointer peer-checked:bg-indigo-600 peer-checked:text-white">🤯 Full pretzel mode</label>
-                    </div>
-                </div>
+      <!-- quiz form (will be filled by JS) -->
+      <form id="quiz-form"></form>
 
-                <div class="mb-6">
-                    <label class="block text-lg font-medium text-white mb-2">2. Are your thoughts racing like they're in a marathon? 🏃💨</label>
-                    <div class="flex items-center space-x-4">
-                        <input type="radio" id="q2-1" name="q2" value="0" class="hidden peer">
-                        <label for="q2-1" class="p-3 rounded-lg border border-gray-600 cursor-pointer peer-checked:bg-indigo-600 peer-checked:text-white">🧘‍♀️ Zen mode</label>
-                        <input type="radio" id="q2-2" name="q2" value="1" class="hidden peer">
-                        <label for="q2-2" class="p-3 rounded-lg border border-gray-600 cursor-pointer peer-checked:bg-indigo-600 peer-checked:text-white">🚶‍♀️ A brisk walk</label>
-                        <input type="radio" id="q2-3" name="q2" value="2" class="hidden peer">
-                        <label for="q2-3" class="p-3 rounded-lg border border-gray-600 cursor-pointer peer-checked:bg-indigo-600 peer-checked:text-white">🏃‍♀️ A steady jog</label>
-                        <input type="radio" id="q2-4" name="q2" value="3" class="hidden peer">
-                        <label for="q2-4" class="p-3 rounded-lg border border-gray-600 cursor-pointer peer-checked:bg-indigo-600 peer-checked:text-white">🚀 Rocket speed</label>
-                    </div>
-                </div>
-
-                <div class="mb-6">
-                    <label class="block text-lg font-medium text-white mb-2">3. Which of these have been your sidekicks lately? (Select all that apply) 🦸‍♂️</label>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="flex items-center">
-                            <input type="checkbox" id="q3-1" name="q3" value="1" class="hidden peer">
-                            <label for="q3-1" class="w-full p-3 rounded-lg border border-gray-600 cursor-pointer peer-checked:bg-indigo-600 peer-checked:text-white">🦉 Tossing and turning</label>
-                        </div>
-                        <div class="flex items-center">
-                            <input type="checkbox" id="q3-2" name="q3" value="1" class="hidden peer">
-                            <label for="q3-2" class="w-full p-3 rounded-lg border border-gray-600 cursor-pointer peer-checked:bg-indigo-600 peer-checked:text-white">🍔 Munchies or no appetite</label>
-                        </div>
-                        <div class="flex items-center">
-                            <input type="checkbox" id="q3-3" name="q3" value="1" class="hidden peer">
-                            <label for="q3-3" class="w-full p-3 rounded-lg border border-gray-600 cursor-pointer peer-checked:bg-indigo-600 peer-checked:text-white">🤕 Aches and pains</label>
-                        </div>
-                        <div class="flex items-center">
-                            <input type="checkbox" id="q3-4" name="q3" value="1" class="hidden peer">
-                            <label for="q3-4" class="w-full p-3 rounded-lg border border-gray-600 cursor-pointer peer-checked:bg-indigo-600 peer-checked:text-white">🤯 Feeling swamped</label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="text-center">
-                    <button type="submit" class="bg-indigo-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-indigo-700 transition-colors duration-200">Reveal My Vibe</button>
-                </div>
-            </form>
-
-            <div id="results-container" class="hidden mt-8 text-center">
-                <h2 class="text-2xl font-bold text-white mb-4">Your Vibe Check Results! 🥁</h2>
-                <p id="results-text" class="text-lg text-white mb-6"></p>
-                <a href="ai-chat.html" class="bg-indigo-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-indigo-700 transition-colors duration-200">Back to Chat</a>
-            </div>
-        </div>
+      <div id="results-container" class="hidden mt-8 text-center">
+        <h2 class="text-2xl font-bold text-white mb-4">Your Vibe Check Results! 🥁</h2>
+        <p id="results-text" class="text-lg text-white mb-6"></p>
+        <a href="ai-chat.html" class="bg-indigo-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-indigo-700 transition-colors duration-200">Back to Chat</a>
+      </div>
     </div>
+  </div>
 
-    <script>
-        const quizForm = document.getElementById('quiz-form');
-        const resultsContainer = document.getElementById('results-container');
-        const resultsText = document.getElementById('results-text');
+  <script>
+    const quizForm = document.getElementById('quiz-form');
+    const resultsContainer = document.getElementById('results-container');
+    const resultsText = document.getElementById('results-text');
 
-        const questions = [
-            {
-                question: "How often have you felt that you were unable to control the important things in your life? 😬",
-                answers: {
-                    0: "Never",
-                    1: "Almost Never",
-                    2: "Sometimes",
-                    3: "Fairly Often",
-                    4: "Very Often"
-                }
-            },
-            {
-                question: "How often have you felt confident about your ability to handle your personal problems? 💪",
-                answers: {
-                    4: "Never",
-                    3: "Almost Never",
-                    2: "Sometimes",
-                    1: "Fairly Often",
-                    0: "Very Often"
-                }
-            },
-            {
-                question: "How often have you felt that things were going your way? ✨",
-                answers: {
-                    4: "Never",
-                    3: "Almost Never",
-                    2: "Sometimes",
-                    1: "Fairly Often",
-                    0: "Very Often"
-                }
-            },
-            {
-                question: "How often have you found that you could not cope with all the things that you had to do? 😩",
-                answers: {
-                    0: "Never",
-                    1: "Almost Never",
-                    2: "Sometimes",
-                    3: "Fairly Often",
-                    4: "Very Often"
-                }
-            },
-            {
-                question: "How often have you been angered because of things that were outside of your control? 😡",
-                answers: {
-                    0: "Never",
-                    1: "Almost Never",
-                    2: "Sometimes",
-                    3: "Fairly Often",
-                    4: "Very Often"
-                }
-            },
-            {
-                question: "How often have you felt difficulties were piling up so high that you could not overcome them? 🏔️",
-                answers: {
-                    0: "Never",
-                    1: "Almost Never",
-                    2: "Sometimes",
-                    3: "Fairly Often",
-                    4: "Very Often"
-                }
-            },
-            {
-                question: "How often have you been able to control irritations in your life? 🧘",
-                answers: {
-                    4: "Never",
-                    3: "Almost Never",
-                    2: "Sometimes",
-                    1: "Fairly Often",
-                    0: "Very Often"
-                }
-            },
-            {
-                question: "How often have you felt that you were on top of things? 🏆",
-                answers: {
-                    4: "Never",
-                    3: "Almost Never",
-                    2: "Sometimes",
-                    1: "Fairly Often",
-                    0: "Very Often"
-                }
-            },
-            {
-                question: "How often have you found yourself thinking about things that you have to accomplish? 📝",
-                answers: {
-                    0: "Never",
-                    1: "Almost Never",
-                    2: "Sometimes",
-                    3: "Fairly Often",
-                    4: "Very Often"
-                }
-            },
-            {
-                question: "How often have you felt tired or fatigued? 😴",
-                answers: {
-                    0: "Never",
-                    1: "Almost Never",
-                    2: "Sometimes",
-                    3: "Fairly Often",
-                    4: "Very Often"
-                }
-            }
-        ];
+    const questions = [
+      {
+        question: "How often have you felt that you were unable to control the important things in your life? 😬",
+        answers: { 0: "Never", 1: "Almost Never", 2: "Sometimes", 3: "Fairly Often", 4: "Very Often" }
+      },
+      {
+        question: "How often have you felt confident about your ability to handle your personal problems? 💪",
+        answers: { 4: "Never", 3: "Almost Never", 2: "Sometimes", 1: "Fairly Often", 0: "Very Often" }
+      },
+      {
+        question: "How often have you felt that things were going your way? ✨",
+        answers: { 4: "Never", 3: "Almost Never", 2: "Sometimes", 1: "Fairly Often", 0: "Very Often" }
+      },
+      {
+        question: "How often have you found that you could not cope with all the things that you had to do? 😩",
+        answers: { 0: "Never", 1: "Almost Never", 2: "Sometimes", 3: "Fairly Often", 4: "Very Often" }
+      },
+      {
+        question: "How often have you been angered because of things that were outside of your control? 😡",
+        answers: { 0: "Never", 1: "Almost Never", 2: "Sometimes", 3: "Fairly Often", 4: "Very Often" }
+      },
+      {
+        question: "How often have you felt difficulties were piling up so high that you could not overcome them? 🏔️",
+        answers: { 0: "Never", 1: "Almost Never", 2: "Sometimes", 3: "Fairly Often", 4: "Very Often" }
+      },
+      {
+        question: "How often have you been able to control irritations in your life? 🧘",
+        answers: { 4: "Never", 3: "Almost Never", 2: "Sometimes", 1: "Fairly Often", 0: "Very Often" }
+      },
+      {
+        question: "How often have you felt that you were on top of things? 🏆",
+        answers: { 4: "Never", 3: "Almost Never", 2: "Sometimes", 1: "Fairly Often", 0: "Very Often" }
+      },
+      {
+        question: "How often have you found yourself thinking about things that you have to accomplish? 📝",
+        answers: { 0: "Never", 1: "Almost Never", 2: "Sometimes", 3: "Fairly Often", 4: "Very Often" }
+      },
+      {
+        question: "How often have you felt tired or fatigued? 😴",
+        answers: { 0: "Never", 1: "Almost Never", 2: "Sometimes", 3: "Fairly Often", 4: "Very Often" }
+      }
+    ];
 
-        function shuffle(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
+    // shuffle helper
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    function generateQuiz() {
+      const selectedQuestions = shuffle([...questions]).slice(0, 10);
+      quizForm.innerHTML = ''; // clear
+
+      selectedQuestions.forEach((q, index) => {
+        const questionElement = document.createElement('div');
+        questionElement.classList.add('mb-6');
+
+        const questionLabel = document.createElement('label');
+        questionLabel.classList.add('block', 'text-lg', 'font-medium', 'text-white', 'mb-2');
+        questionLabel.textContent = `${index + 1}. ${q.question}`;
+        questionElement.appendChild(questionLabel);
+
+        const answersContainer = document.createElement('div');
+        answersContainer.classList.add('flex', 'flex-wrap', 'gap-3');
+
+        // create each option as: <label> <input class="peer sr-only"> <span class="peer-checked:...">Option text</span> </label>
+        for (const [value, text] of Object.entries(q.answers)) {
+          const optionLabel = document.createElement('label');
+          optionLabel.classList.add('flex', 'items-center', 'cursor-pointer', 'rounded-lg', 'border', 'border-gray-600');
+
+          // input inside label so peer only affects elements in same label
+          const input = document.createElement('input');
+          input.type = 'radio';
+          input.name = `q${index}`;
+          input.value = value;
+          // use sr-only instead of hidden so it's still in layout/DOM for peer selectors
+          input.classList.add('peer', 'sr-only');
+
+          const span = document.createElement('span');
+          span.classList.add('px-4', 'py-2', 'block', 'peer-checked:bg-indigo-600', 'peer-checked:text-white', 'rounded-lg');
+          span.textContent = text;
+
+          optionLabel.appendChild(input);
+          optionLabel.appendChild(span);
+          answersContainer.appendChild(optionLabel);
         }
 
-        function generateQuiz() {
-            const selectedQuestions = shuffle(questions).slice(0, 10);
-            quizForm.innerHTML = ''; // Clear existing questions
+        questionElement.appendChild(answersContainer);
+        quizForm.appendChild(questionElement);
+      });
 
-            selectedQuestions.forEach((q, index) => {
-                const questionElement = document.createElement('div');
-                questionElement.classList.add('mb-6');
+      // submit button
+      const submitWrap = document.createElement('div');
+      submitWrap.classList.add('text-center');
+      submitWrap.innerHTML = `<button type="submit" class="bg-indigo-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-indigo-700 transition-colors duration-200">Reveal My Vibe</button>`;
+      quizForm.appendChild(submitWrap);
+    }
 
-                const questionLabel = document.createElement('label');
-                questionLabel.classList.add('block', 'text-lg', 'font-medium', 'text-white', 'mb-2');
-                questionLabel.textContent = `${index + 1}. ${q.question}`;
-                questionElement.appendChild(questionLabel);
+    quizForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      let score = 0;
+      const formData = new FormData(quizForm);
+      for (const value of formData.values()) {
+        const n = parseInt(value, 10);
+        if (!Number.isNaN(n)) score += n;
+      }
 
-                const answersContainer = document.createElement('div');
-                answersContainer.classList.add('flex', 'items-center', 'space-x-4');
+      let resultMessage = '';
+      if (score <= 13) {
+        resultMessage = 'Your stress levels seem to be in a good place! Keep shining. ✨';
+      } else if (score <= 26) {
+        resultMessage = 'A little stress is normal. Remember to be kind to yourself today. 😊 Here\'s a little joke: Why don\'t scientists trust atoms? Because they make up everything! 😂';
+      } else {
+        resultMessage = 'It looks like things might be tough right now. Remember, it\'s okay to not be okay. ❤️ Here\'s a little joke to hopefully bring a smile: Why did the scarecrow win an award? Because he was outstanding in his field! 🌾';
+      }
 
-                for (const [value, text] of Object.entries(q.answers)) {
-                    const input = document.createElement('input');
-                    input.type = 'radio';
-                    input.id = `q${index}-${value}`;
-                    input.name = `q${index}`;
-                    input.value = value;
-                    input.classList.add('hidden', 'peer');
+      resultsText.textContent = resultMessage;
+      resultsContainer.classList.remove('hidden');
+      quizForm.classList.add('hidden');
+    });
 
-                    const label = document.createElement('label');
-                    label.htmlFor = `q${index}-${value}`;
-                    label.classList.add('p-3', 'rounded-lg', 'border', 'border-gray-600', 'cursor-pointer', 'peer-checked:bg-indigo-600', 'peer-checked:text-white');
-                    label.textContent = text;
-
-                    answersContainer.appendChild(input);
-                    answersContainer.appendChild(label);
-                }
-
-                questionElement.appendChild(answersContainer);
-                quizForm.appendChild(questionElement);
-            });
-
-            const submitButton = document.createElement('div');
-            submitButton.classList.add('text-center');
-            submitButton.innerHTML = `<button type="submit" class="bg-indigo-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-indigo-700 transition-colors duration-200">Reveal My Vibe</button>`;
-            quizForm.appendChild(submitButton);
-        }
-
-        quizForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-
-            let score = 0;
-            const formData = new FormData(quizForm);
-            for (const value of formData.values()) {
-                score += parseInt(value);
-            }
-
-            let resultMessage = '';
-            if (score <= 13) {
-                resultMessage = 'Your stress levels seem to be in a good place! Keep shining. ✨';
-            } else if (score <= 26) {
-                resultMessage = 'A little stress is normal. Remember to be kind to yourself today. 😊 Here\'s a little joke for you: Why don\'t scientists trust atoms? Because they make up everything! 😂';
-            } else {
-                resultMessage = 'It looks like things might be tough right now. Remember, it\'s okay to not be okay. ❤️ Here\'s a little joke to hopefully bring a smile: Why did the scarecrow win an award? Because he was outstanding in his field! 🌾';
-            }
-
-            resultsText.textContent = resultMessage;
-            resultsContainer.classList.remove('hidden');
-            quizForm.classList.add('hidden');
-        });
-
-        document.addEventListener('DOMContentLoaded', generateQuiz);
-    </script>
+    document.addEventListener('DOMContentLoaded', generateQuiz);
+  </script>
+</body>
+</html>

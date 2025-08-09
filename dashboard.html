@@ -32,7 +32,7 @@
                 <div class="flex items-center justify-between h-16">
                     <div class="flex-shrink-0">
                         <div class="flex items-center space-x-2">
-                            <a href="index.html">
+                            <a href="welcome.html">
                               <img src="ChatGPT_Image_Aug_7__2025__01_22_37_PM-removebg-preview.png" alt="Solvia Logo" class="h-32 w-auto">
                             </a>
                         </div>
@@ -57,13 +57,13 @@
                     <h2 class="text-2xl font-bold text-white mb-2">How are you feeling today?</h2>
                     <p class="text-gray-400 mb-4">A quick check-in helps you stay mindful.</p>
                     <div class="flex justify-center space-x-4">
-                        <button onclick="alert('Glad to hear you are feeling great!')" class="p-4 bg-gray-700 rounded-full hover:bg-green-500/20 hover:scale-110 transform transition-all duration-200 border border-gray-600" aria-label="Feeling Happy">
+                        <button onclick="showQuote('happy')" class="p-4 bg-gray-700 rounded-full hover:bg-green-500/20 hover:scale-110 transform transition-all duration-200 border border-gray-600" aria-label="Feeling Happy">
                             <span class="text-4xl">😊</span>
                         </button>
-                        <button onclick="alert('Thanks for checking in. Remember to take a break if you need one.')" class="p-4 bg-gray-700 rounded-full hover:bg-yellow-500/20 hover:scale-110 transform transition-all duration-200 border border-gray-600" aria-label="Feeling Neutral">
+                        <button onclick="showQuote('neutral')" class="p-4 bg-gray-700 rounded-full hover:bg-yellow-500/20 hover:scale-110 transform transition-all duration-200 border border-gray-600" aria-label="Feeling Neutral">
                             <span class="text-4xl">😐</span>
                         </button>
-                        <button onclick="alert('Sorry to hear that. Consider visiting the AI Wellness Chat if you want to talk.')" class="p-4 bg-gray-700 rounded-full hover:bg-red-500/20 hover:scale-110 transform transition-all duration-200 border border-gray-600" aria-label="Feeling Sad">
+                        <button onclick="showQuote('sad')" class="p-4 bg-gray-700 rounded-full hover:bg-red-500/20 hover:scale-110 transform transition-all duration-200 border border-gray-600" aria-label="Feeling Sad">
                             <span class="text-4xl">😔</span>
                         </button>
                     </div>
@@ -85,7 +85,7 @@
                 <div>
                     <h2 class="text-2xl font-bold text-white mb-4">Explore the De-Stress Zone</h2>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <a href="/games" class="block bg-gray-800/50 rounded-xl shadow-lg p-6 hover-lift-dark border border-gray-700">
+                        <a href="games-home.html" class="block bg-gray-800/50 rounded-xl shadow-lg p-6 hover-lift-dark border border-gray-700">
                             <div class="flex items-center space-x-4">
                                 <div class="p-3 bg-teal-500/10 rounded-lg border border-teal-500/20">
                                     <svg class="h-6 w-6 text-teal-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" /></svg>
@@ -96,7 +96,7 @@
                                 </div>
                             </div>
                         </a>
-                        <a href="/music" class="block bg-gray-800/50 rounded-xl shadow-lg p-6 hover-lift-dark border border-gray-700">
+                        <a href="calming-music.html" class="block bg-gray-800/50 rounded-xl shadow-lg p-6 hover-lift-dark border border-gray-700">
                             <div class="flex items-center space-x-4">
                                 <div class="p-3 bg-purple-500/10 rounded-lg border border-purple-500/20">
                                     <svg class="h-6 w-6 text-purple-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m9 9 10.5-3m0 6.553v3.75a2.25 2.25 0 0 1-1.632 2.163l-1.32.377a1.803 1.803 0 1 1-.99-3.467l2.31-.66a2.25 2.25 0 0 0 1.632-2.163Zm0 0V2.25L9 5.25v10.303m0 0v3.75a2.25 2.25 0 0 1-1.632 2.163l-1.32.377a1.803 1.803 0 0 1-.99-3.467l2.31-.66A2.25 2.25 0 0 0 9 15.553Z" /></svg>
@@ -107,7 +107,7 @@
                                 </div>
                             </div>
                         </a>
-                        <a href="/meditation" class="block bg-gray-800/50 rounded-xl shadow-lg p-6 hover-lift-dark border border-gray-700">
+                        <a href="guided-meditation.html" class="block bg-gray-800/50 rounded-xl shadow-lg p-6 hover-lift-dark border border-gray-700">
                             <div class="flex items-center space-x-4">
                                 <div class="p-3 bg-sky-500/10 rounded-lg border border-sky-500/20">
                                     <svg class="h-6 w-6 text-sky-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9A2.25 2.25 0 0 0 13.5 5.25h-9a2.25 2.25 0 0 0-2.25 2.25v9A2.25 2.25 0 0 0 4.5 18.75Z" /></svg>
@@ -122,6 +122,14 @@
                 </div>
             </div>
         </main>
+    </div>
+
+    <!-- Quote Modal -->
+    <div id="quoteModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 hidden">
+        <div class="bg-gray-800 text-white rounded-lg shadow-xl p-8 w-full max-w-md relative text-center">
+            <button onclick="closeQuoteModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-2xl font-bold">&times;</button>
+            <p id="quoteText" class="text-2xl font-medium"></p>
+        </div>
     </div>
 
     <script>
@@ -180,6 +188,65 @@
                 });
             }
         });
+
+        const quotes = {
+            happy: [
+                "The greatest happiness you can have is knowing that you do not necessarily require happiness.",
+                "Happiness is not something ready made. It comes from your own actions.",
+                "The purpose of our lives is to be happy.",
+                "For every minute you are angry you lose sixty seconds of happiness.",
+                "Happiness is when what you think, what you say, and what you do are in harmony.",
+                "The present moment is filled with joy and happiness. If you are attentive, you will see it.",
+                "Optimism is a happiness magnet. If you stay positive, good things and good people will be drawn to you.",
+                "Happiness is not in the mere possession of money; it lies in the joy of achievement, in the thrill of creative effort.",
+                "The only thing that will make you happy is being happy with who you are, and not who people think you are.",
+                "Success is not the key to happiness. Happiness is the key to success. If you love what you are doing, you will be successful."
+            ],
+            neutral: [
+                "The best way to predict the future is to create it.",
+                "The only way to do great work is to love what you do.",
+                "Believe you can and you're halfway there.",
+                "The secret of getting ahead is getting started.",
+                "It does not matter how slowly you go as long as you do not stop.",
+                "Everything you’ve ever wanted is on the other side of fear.",
+                "The future belongs to those who believe in the beauty of their dreams.",
+                "You are never too old to set another goal or to dream a new dream.",
+                "The only limit to our realization of tomorrow will be our doubts of today.",
+                "What you get by achieving your goals is not as important as what you become by achieving your goals.",
+                "Maybe a short walk or a mindful game could brighten your day. How about trying our <a href='games-home.html' class='text-teal-400 hover:underline'>Mindful Games</a>?"
+            ],
+            sad: [
+                "The word 'happy' would lose its meaning if it were not balanced by sadness.",
+                "Tears come from the heart and not from the brain.",
+                "It's okay to not be okay.",
+                "The darkest nights produce the brightest stars.",
+                "You are not alone. It's okay to ask for help.",
+                "This too shall pass.",
+                "Every day may not be good, but there is something good in every day.",
+                "The sun is a daily reminder that we too can rise again from the darkness, that we too can shine our own light.",
+                "It's okay to feel sad. It's a part of being human.",
+                "You're braver than you believe, and stronger than you seem, and smarter than you think.",
+                "Sometimes, a quiet moment is all we need. How about trying our <a href='games-home.html' class='text-teal-400 hover:underline'>Breathing Guide</a> to relax and refocus?",
+                "If you feel like talking, our <a href='ai-chat.html' class='text-indigo-400 hover:underline'>AI Wellness Chat</a> is always here for you."
+            ]
+        };
+
+        function showQuote(mood) {
+            const moodQuotes = quotes[mood];
+            const randomIndex = Math.floor(Math.random() * moodQuotes.length);
+            const randomQuote = moodQuotes[randomIndex];
+            
+            const quoteText = document.getElementById('quoteText');
+            quoteText.innerHTML = `"${randomQuote}"`;
+
+            const quoteModal = document.getElementById('quoteModal');
+            quoteModal.classList.remove('hidden');
+        }
+
+        function closeQuoteModal() {
+            const quoteModal = document.getElementById('quoteModal');
+            quoteModal.classList.add('hidden');
+        }
     </script>
 </body>
 </html>

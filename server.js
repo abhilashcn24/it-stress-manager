@@ -2,9 +2,18 @@ require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const axios = require('axios');
+const fs = require('fs'); // Import the fs module
 
 const app = express();
 const port = 3000;
+
+// Read the knowledge bank file
+let knowledgeBank = '';
+try {
+    knowledgeBank = fs.readFileSync(path.join(__dirname, 'knowledge_bank.txt'), 'utf8');
+} catch (err) {
+    console.error('Error reading knowledge bank file:', err);
+}
 
 app.use(express.json());
 app.use(express.static(__dirname));
@@ -32,7 +41,8 @@ app.get('/hr', (req, res) => {
 app.post('/api/chat', async (req, res) => {
     try {
         const userMessage = req.body.message;
-        const prompt = `The user is seeking wellness advice. Here is their message: "${userMessage}". Respond in a supportive and helpful tone.`;
+        // Add the knowledge bank content to the prompt
+        const prompt = `${knowledgeBank}\n\nThe user is seeking wellness advice or has a question about the Solvia application. Here is their message: \"${userMessage}\". Respond in a supportive and helpful tone, using the provided information about Solvia to answer any questions about the application.`;
         const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
         const apiKey = process.env.GEMINI_API_KEY;
         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
