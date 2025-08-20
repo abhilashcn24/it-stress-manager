@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOLVIA - Robot Jump</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .bg-gradient-dark {
+            background-color: #111827;
+            background-image: linear-gradient(to top right, #0d121c, #111827);
+        }
+        /* Styles from the Robot Jump Game */
+        .game-wrap{width:100%;max-width:980px;padding:18px;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;gap:12px}
+        .game-header{width:100%;display:flex;justify-content:space-between;align-items:center;color:#e6eef8}
+        .game-title{margin:0;font-size:20px}
+        .controls{display:flex;gap:8px;align-items:center}
+        .btn{background:#60a5fa;color:#042233;padding:10px 14px;border-radius:10px;border:0;font-weight:700;cursor:pointer}
+        .btn.secondary{background:#34d399;color:#022; }
+        .canvas-wrap{position:relative;width:100%;display:flex;justify-content:center}
+        canvas#gameCanvas{border-radius:12px;display:block;background:linear-gradient(180deg,#87ceeb,#e0f7fa);max-width:100%;height:auto}
+        #overlay, #loading {
+            position:absolute; inset:0; display:flex; align-items:center; justify-content:center; flex-direction:column;
+            background: rgba(0,0,0,0.6); color:#fff; border-radius:12px; z-index:30;
+        }
+        #overlay.hidden, #loading.hidden { visibility:hidden; opacity:0; pointer-events:none; transition:visibility 0s .2s, opacity .2s; }
+        #overlay.visible, #loading.visible { visibility:visible; opacity:1; pointer-events:auto; transition:opacity .2s; }
+        .panel{background:rgba(2,6,23,0.7);padding:18px;border-radius:10px;text-align:center;border:1px solid rgba(255,255,255,0.04)}
+        .meta{color:#9fbbe6;font-size:13px;margin-top:6px}
+        @media (max-width:640px){
+            .btn{padding:8px 10px}
+            .game-title{font-size:18px}
+        }
+    </style>
+</head>
+<body class="bg-gradient-dark text-gray-300">
+
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="bg-gray-900/80 backdrop-blur-sm shadow-lg sticky top-0 z-20">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16">
+                    <a href="games-home.html" class="flex items-center space-x-2 text-white font-bold hover:text-indigo-400 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                        </svg>
+                        <span>Back to Games</span>
+                    </a>
+                    <div class="text-xl font-bold text-white">Robot Jump</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Game Content -->
+        <main class="flex-grow flex flex-col items-center justify-center text-center p-4">
+            <div class="game-wrap" role="main">
+                <header class="game-header">
+                  <h1 class="game-title">🤖 Robot Jump — Cartoon Runner</h1>
+                  <div class="controls">
+                    <div class="meta">Score: <strong id="uiScore">0</strong></div>
+                    <button id="muteBtn" class="btn">Mute</button>
+                  </div>
+                </header>
+            
+                <div class="canvas-wrap" style="width:100%;">
+                  <canvas id="gameCanvas" width="900" height="420" aria-label="Robot Jump Game"></canvas>
+            
+                  <div id="loading" class="panel visible">
+                    <div style="font-weight:700;margin-bottom:8px">Loading assets…</div>
+                    <div style="font-size:13px;color:#9fbbe6">If you put robot.png, banana.png, cone.png, rock.png in the same folder the game will use them. Otherwise cartoon shapes will be used.</div>
+                  </div>
+            
+                  <div id="overlay" class="hidden">
+                    <div class="panel">
+                      <div id="finalText" style="font-size:20px;font-weight:700;margin-bottom:8px">Game Over</div>
+                      <div class="meta" style="margin-bottom:12px">Final Score: <strong id="finalScore">0</strong></div>
+                      <div style="display:flex;gap:8px;justify-content:center">
+                        <button id="restartBtn" class="btn">Play Again</button>
+                        <button id="centerRestart" class="btn secondary">Reset View</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            
+                <div style="display:flex;gap:10px;align-items:center;justify-content:center;margin-top:6px">
+                  <button id="jumpBtn" class="btn">Jump</button>
+                  <button id="pauseBtn" class="btn secondary">Pause</button>
+                  <div class="meta">Controls: Space / ↑ / click / tap</div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+<script>
+    // ---------- Config ----------
+    const CONFIG = {
+        canvasLogicalW: 900,
+        canvasLogicalH: 420,
+        groundH: 80,
+        robotW: 72,
+        robotH: 72,
+        gravity: 2200,          // px/s^2
+        jumpVel: -820,          // px/s initial velocity
+        coyoteTime: 0.12,       // seconds
+        spawnBase: 1.2,         // seconds
+        spawnJitter: 1.0,       // seconds
+        baseSpeed: 320,         // px/s
+        speedRamp: 8,           // px/s per sec
+        scorePerSec: 10
+    };
+
+    // ---------- Canvas & scaling ----------
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    let DPR = Math.max(1, window.devicePixelRatio || 1);
+    function resizeCanvas() {
+        const cssMaxWidth = Math.min(window.innerWidth - 40, 980); // keep margins
+        const cssHeight = (CONFIG.canvasLogicalH / CONFIG.canvasLogicalW) * cssMaxWidth;
+        canvas.style.width = cssMaxWidth + 'px';
+        canvas.style.height = cssHeight + 'px';
+        // set internal resolution
+        canvas.width = Math.round(CONFIG.canvasLogicalW * DPR);
+        canvas.height = Math.round(CONFIG.canvasLogicalH * DPR);
+        ctx.setTransform(DPR,0,0,DPR,0,0); // keep drawing in logical pixels
+    }
+    window.addEventListener('resize', () => { DPR = Math.max(1, window.devicePixelRatio || 1); resizeCanvas(); });
+
+    // ---------- UI elements ----------
+    const uiScore = document.getElementById('uiScore');
+    const loadingEl = document.getElementById('loading');
+    const overlayEl = document.getElementById('overlay');
+    const finalScoreEl = document.getElementById('finalScore');
+    const finalText = document.getElementById('finalText');
+    const jumpBtn = document.getElementById('jumpBtn');
+    const restartBtn = document.getElementById('restartBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const muteBtn = document.getElementById('muteBtn');
+    const centerRestartBtn = document.getElementById('centerRestart');
+
+    // ---------- Audio (WebAudio synth) ----------
+    let audioCtx = null;
+    let isMuted = false;
+    function ensureAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+    function playJumpSound(){
+        if (isMuted) return;
+        ensureAudio();
+        const now = audioCtx.currentTime;
+        const o = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        o.type = 'triangle';
+        o.frequency.setValueAtTime(880, now);
+        o.frequency.exponentialRampToValueAtTime(520, now + 0.08);
+        g.gain.setValueAtTime(0.12, now);
+        g.gain.exponentialRampToValueAtTime(0.001, now + 0.10);
+        o.connect(g); g.connect(audioCtx.destination);
+        o.start(now); o.stop(now + 0.12);
+    }
+    function playHitSound(){
+        if (isMuted) return;
+        ensureAudio();
+        const now = audioCtx.currentTime;
+        const o = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        o.type = 'sawtooth';
+        o.frequency.setValueAtTime(300, now);
+        o.frequency.exponentialRampToValueAtTime(80, now + 0.2);
+        g.gain.setValueAtTime(0.18, now);
+        g.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+        o.connect(g); g.connect(audioCtx.destination);
+        o.start(now); o.stop(now + 0.3);
+    }
+    muteBtn.addEventListener('click', () => {
+        ensureAudio(); // Ensure audio context is created
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume().then(() => {
+                console.log('AudioContext resumed successfully');
+            }).catch(error => {
+                console.error('Error resuming AudioContext:', error);
+            });
+        }
+        isMuted = !isMuted;
+        muteBtn.textContent = isMuted ? 'Unmute' : 'Mute';
+    });
+
+    // ---------- Image preloading with fallback ----------
+    const localPaths = {
+        robot: 'robot.png',
+        banana: 'banana.png',
+        cone: 'cone.png',
+        rock: 'rock.png'
+    };
+    const images = {}; // will hold Image objects or null
+    function loadImage(src){
+        return new Promise(resolve => {
+            const img = new Image();
+            img.onload = () => resolve(img);
+            img.onerror = () => resolve(null);
+            img.src = src;
+        });
+    }
+    async function preloadImages(){
+        const keys = Object.keys(localPaths);
+        for (let k of keys){
+            images[k] = await loadImage(localPaths[k]);
+        }
+    }
+
+    // ---------- Game state ----------
+    let robot = {
+        w: CONFIG.robotW,
+        h: CONFIG.robotH,
+        x: 140,
+        y: CONFIG.canvasLogicalH - CONFIG.groundH - CONFIG.robotH,
+        vy: 0,
+        onGround: true,
+        lastGroundTime: -999
+    };
+    let obstacles = []; // {x,y,w,h,type,img}
+    let score = 0;
+    let speed = CONFIG.baseSpeed;
+    let elapsed = 0;
+    let spawnTimer = 0;
+    let running = false;
+    let lastTime = 0;
+    let rafId = null;
+    let paused = false;
+
+    // ---------- Helpers ----------
+    function rand(min,max){ return min + Math.random()*(max-min); }
+    function rectsOverlap(a,b){
+        return !(a.x + a.w < b.x || a.x > b.x + b.w || a.y + a.h < b.y || a.y > b.y + b.h);
+    }
+
+    // ---------- Drawing fallbacks (if images missing) ----------
+    function drawRobotFallback(x,y,w,h){
+        ctx.save();
+        ctx.fillStyle = '#9ad3ff';
+        roundRect(ctx,x,y,w,h,10,true,false);
+        ctx.fillStyle = '#07243b';
+        roundRect(ctx,x+8,y+10,w-16,h-24,8,true,false);
+        ctx.fillStyle = '#fff';
+        ctx.beginPath(); ctx.ellipse(x+w*0.32, y+h*0.4, 6, 8, 0,0,Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(x+w*0.68, y+h*0.4, 6, 8, 0,0,Math.PI*2); ctx.fill();
+        ctx.fillStyle = '#062033';
+        ctx.beginPath(); ctx.ellipse(x+w*0.32, y+h*0.4, 2.5, 3.5, 0,0,Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(x+w*0.68, y+h*0.4, 2.5, 3.5, 0,0,Math.PI*2); ctx.fill();
+        ctx.strokeStyle = '#9ad3ff'; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.moveTo(x+w*0.5,y); ctx.lineTo(x+w*0.5,y-14); ctx.stroke();
+        ctx.fillStyle = '#ffd166'; ctx.beginPath(); ctx.arc(x+w*0.5,y-16,4,0,Math.PI*2); ctx.fill();
+        ctx.restore();
+    }
+    function drawBananaFallback(x,y,w,h){
+        ctx.save();
+        ctx.translate(x,y);
+        ctx.fillStyle = '#ffd166';
+        ctx.beginPath();
+        ctx.ellipse(w*0.4, h*0.5, w*0.6, h*0.35, -0.6, 0, Math.PI*2);
+        ctx.fill();
+        ctx.fillStyle = '#b58900';
+        ctx.fillRect(w*0.9, h*0.2, w*0.08, h*0.12);
+        ctx.restore();
+    }
+    function drawConeFallback(x,y,w,h){
+        ctx.save();
+        ctx.fillStyle = '#ffb86b';
+        ctx.beginPath();
+        ctx.moveTo(x+w*0.5,y);
+        ctx.lineTo(x+w,y+h);
+        ctx.lineTo(x,y+h);
+        ctx.closePath(); ctx.fill();
+        ctx.fillStyle = '#d97706';
+        ctx.fillRect(x+w*0.2, y+h*0.4, w*0.6, h*0.12);
+        ctx.restore();
+    }
+    function drawRockFallback(x,y,w,h){
+        ctx.save();
+        ctx.fillStyle = '#94a3b8';
+        ctx.beginPath();
+        ctx.ellipse(x+w*0.5, y+h*0.5, w*0.45, h*0.36, 0,0,Math.PI*2);
+        ctx.fill();
+        ctx.restore();
+    }
+    function roundRect(ctx,x,y,w,h,r,fill,stroke){
+        if (typeof r === 'undefined') r = 6;
+        ctx.beginPath();
+        ctx.moveTo(x+r,y);
+        ctx.arcTo(x+w,y,x+w,y+h,r);
+        ctx.arcTo(x+w,y+h,x,y+h,r);
+        ctx.arcTo(x,y+h,x,y,r);
+        ctx.arcTo(x,y,x+w,y,r);
+        ctx.closePath();
+        if (fill) ctx.fill();
+        if (stroke) ctx.stroke();
+    }
+
+    // ---------- Spawn obstacle function ----------
+    function spawnObstacle() {
+        const types = ['banana','cone','rock'];
+        const type = types[Math.floor(Math.random()*types.length)];
+        const w = rand(36,60);
+        const h = w;
+        const x = CONFIG.canvasLogicalW + 20;
+        const y = CONFIG.canvasLogicalH - CONFIG.groundH - h + 6; // slight sink
+        const img = images[type] || null;
+        obstacles.push({ x, y, w, h, type, img });
+    }
+
+    // ---------- Game update & draw ----------
+    function updateAndDraw(dt){
+        if (paused) return;
+        elapsed += dt;
+        robot.vy += CONFIG.gravity * dt;
+        robot.y += robot.vy * dt;
+        const groundY = CONFIG.canvasLogicalH - CONFIG.groundH - robot.h;
+        if (robot.y >= groundY){
+            robot.y = groundY;
+            robot.vy = 0;
+            if (!robot.onGround){
+                robot.onGround = true;
+                robot.lastGroundTime = elapsed;
+            }
+        } else {
+            if (robot.onGround){
+                robot.onGround = false;
+                robot.lastGroundTime = elapsed;
+            }
+        }
+
+        spawnTimer -= dt;
+        if (spawnTimer <= 0){
+            spawnObstacle();
+            spawnTimer = CONFIG.spawnBase + (Math.random() * CONFIG.spawnJitter);
+            spawnTimer = Math.max(0.5, spawnTimer - (speed - CONFIG.baseSpeed)/500);
+        }
+
+        for (let o of obstacles){ o.x -= speed * dt; }
+        obstacles = obstacles.filter(o => o.x + o.w > -20);
+
+        const robotBox = { x: robot.x, y: robot.y, w: robot.w, h: robot.h };
+        for (let o of obstacles){
+            const obBox = { x: o.x, y: o.y, w: o.w, h: o.h };
+            if (rectsOverlap({...robotBox}, {...obBox})){
+                playHitSound();
+                return endGame();
+            }
+        }
+
+        score += CONFIG.scorePerSec * dt;
+        speed += CONFIG.speedRamp * dt;
+
+        drawScene();
+    }
+
+    // ---------- Draw scene ----------
+    function drawScene(){
+        ctx.clearRect(0,0, CONFIG.canvasLogicalW, CONFIG.canvasLogicalH);
+
+        const g = ctx.createLinearGradient(0,0,0,CONFIG.canvasLogicalH);
+        g.addColorStop(0, '#87ceeb'); g.addColorStop(1, '#e0f7fa');
+        ctx.fillStyle = g; ctx.fillRect(0,0,CONFIG.canvasLogicalW, CONFIG.canvasLogicalH);
+
+        ctx.fillStyle = '#c8f0ff';
+        ctx.beginPath(); ctx.ellipse(120, 160, 260, 90, 0, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(540, 150, 320, 100, 0, 0, Math.PI*2); ctx.fill();
+
+        ctx.fillStyle = '#654321';
+        ctx.fillRect(0, CONFIG.canvasLogicalH - CONFIG.groundH, CONFIG.canvasLogicalW, CONFIG.groundH);
+
+        if (images.robot){
+            ctx.drawImage(images.robot, robot.x, robot.y, robot.w, robot.h);
+        } else {
+            drawRobotFallback(robot.x, robot.y, robot.w, robot.h);
+        }
+
+        for (let o of obstacles){
+            if (o.img){
+                ctx.drawImage(o.img, o.x, o.y, o.w, o.h);
+            } else {
+                if (o.type === 'banana') drawBananaFallback(o.x, o.y, o.w, o.h);
+                else if (o.type === 'cone') drawConeFallback(o.x, o.y, o.w, o.h);
+                else drawRockFallback(o.x, o.y, o.w, o.h);
+            }
+        }
+
+        ctx.fillStyle = '#07243b';
+        ctx.fillRect(14,14,136,28);
+        ctx.fillStyle = '#fff';
+        ctx.font = '18px Inter, Arial';
+        ctx.fillText('Score: ' + Math.floor(score), 20, 34);
+    }
+
+    // ---------- End game ----------
+    function endGame(){
+        running = false;
+        overlayEl.classList.remove('hidden'); overlayEl.classList.add('visible');
+        finalScoreEl.textContent = Math.floor(score);
+        finalText.textContent = '💥 Game Over';
+        cancelAnimationFrame(rafId);
+    }
+
+    // ---------- Jump logic (coyote time included) ----------
+    function tryJump(){
+        const nowElapsed = elapsed;
+        if (robot.onGround || (nowElapsed - robot.lastGroundTime <= CONFIG.coyoteTime)){
+            robot.vy = CONFIG.jumpVel;
+            robot.onGround = false;
+            playJumpSound();
+        }
+    }
+
+    // ---------- Game loop ----------
+    function gameLoop(ts){
+        if (!lastTime) lastTime = ts;
+        const dtMs = ts - lastTime;
+        lastTime = ts;
+        const dt = Math.min(0.05, dtMs/1000);
+        if (running && !paused) updateAndDraw(dt);
+        uiScore.textContent = Math.floor(score);
+        rafId = requestAnimationFrame(gameLoop);
+    }
+
+    // ---------- Start / reset ----------
+    function startGame(){
+        resizeCanvas();
+        imagesLoadedFlag = true;
+        robot.x = 140;
+        robot.y = CONFIG.canvasLogicalH - CONFIG.groundH - robot.h;
+        robot.vy = 0;
+        robot.onGround = true;
+        robot.lastGroundTime = -999;
+        obstacles = [];
+        score = 0;
+        speed = CONFIG.baseSpeed;
+        elapsed = 0;
+        spawnTimer = 0.8;
+        gameOver = false;
+        overlayEl.classList.remove('visible'); overlayEl.classList.add('hidden');
+        lastTime = 0;
+        running = true;
+        paused = false;
+        cancelAnimationFrame(rafId);
+        rafId = requestAnimationFrame(gameLoop);
+    }
+
+    pauseBtn.addEventListener('click', ()=> {
+        paused = !paused;
+        pauseBtn.textContent = paused ? 'Resume' : 'Pause';
+    });
+
+    restartBtn.addEventListener('click', () => { startGame(); });
+    centerRestartBtn.addEventListener('click', () => { resizeCanvas(); });
+
+    window.addEventListener('keydown', (e)=> {
+        if (e.code === 'Space' || e.code === 'ArrowUp'){ e.preventDefault(); tryJump(); }
+        if (e.code === 'KeyP'){ paused = !paused; }
+    });
+    canvas.addEventListener('pointerdown', (e)=> {
+        if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume().catch(()=>{});
+        tryJump();
+    });
+    jumpBtn.addEventListener('click', () => tryJump());
+    document.addEventListener('visibilitychange', ()=> { if (document.hidden) paused = true; });
+
+    muteBtn.addEventListener('click', ()=> { isMuted = !isMuted; muteBtn.textContent = isMuted ? 'Unmute' : 'Mute'; });
+
+    let imagesLoadedFlag = false;
+    async function init(){
+        resizeCanvas();
+        ensureAudio(); // Ensure audio context is created on init
+        await preloadImages();
+        loadingEl.classList.remove('visible'); loadingEl.classList.add('hidden');
+        imagesLoadedFlag = true;
+        startGame();
+    }
+    preloadImages().then(() =>{ loadingEl.classList.remove('visible'); loadingEl.classList.add('hidden'); imagesLoadedFlag = true; startGame(); });
+
+    ['pointerdown','keydown','touchstart'].forEach(ev=>{
+        window.addEventListener(ev, function resumeAudioOnUser(){
+            if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume().catch(()=>{});
+            ensureAudio();
+            window.removeEventListener(ev, resumeAudioOnUser);
+        }, { once: true });
+    });
+
+</script>
+
+</body>
+</ht
