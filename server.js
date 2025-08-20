@@ -8,6 +8,8 @@ const { spawn } = require('child_process');
 const app = express();
 const port = 3000;
 
+const conversationHistories = {}; // In-memory storage for conversation histories
+
 // Read the knowledge bank file
 let knowledgeBank = '';
 let chatbotPrompt = '';
@@ -44,8 +46,29 @@ app.get('/hr', (req, res) => {
 app.post('/api/chat', async (req, res) => {
     try {
         const userMessage = req.body.message;
-        // Add the knowledge bank content to the prompt
-        const prompt = `${chatbotPrompt}\n\n${knowledgeBank}\n\nUser: ${userMessage}`.replace('{{ user input }}', userMessage);
+        const userId = 'defaultUser'; // Placeholder for user identification
+
+        // Initialize conversation history for the user if it doesn't exist
+        if (!conversationHistories[userId]) {
+            conversationHistories[userId] = [];
+        }
+
+        const userConversation = conversationHistories[userId];
+
+        // Add user message to history
+        userConversation.push({ role: "user", content: userMessage });
+
+        // Limit history to last 10 turns (user + bot)
+        const recentHistory = userConversation.slice(-20); // 10 user messages + 10 bot responses
+
+        let historyString = '';
+        for (const turn of recentHistory) {
+            historyString += `${turn.role}: ${turn.content}\n`;
+        }
+
+        // Construct the prompt with conversation history
+        const prompt = `${chatbotPrompt}\n\n${knowledgeBank}\n\nConversation History:\n${historyString}\nUser: ${userMessage}`.replace('{{ user input }}', userMessage);
+
         const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
         const apiKey = process.env.GEMINI_API_KEY;
         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
@@ -54,6 +77,12 @@ app.post('/api/chat', async (req, res) => {
 
         if (response.data.candidates && response.data.candidates.length > 0) {
             const botMessage = response.data.candidates[0].content.parts[0].text;
+            // Add bot message to history
+            userConversation.push({ role: "bot", content: botMessage });
+
+            // Trim history to last 10 conversations (20 entries: 10 user, 10 bot)
+            conversationHistories[userId] = userConversation.slice(-20);
+
             res.json({ message: botMessage });
         } else {
             res.status(500).json({ error: 'No response from AI' });
