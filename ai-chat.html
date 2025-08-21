@@ -90,6 +90,113 @@
             height: 24px;
             width: 24px;
         }
+
+        /* Voice Agent Styles */
+        .voice-agent-container {
+            position: relative;
+            width: 600px;
+            height: 600px;
+        }
+
+        #voiceCanvas {
+            border-radius: 50%;
+            box-shadow:
+                0 0 50px rgba(255, 255, 255, 0.1),
+                inset 0 0 50px rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+        }
+
+        .status {
+            position: absolute;
+            bottom: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .listening-indicator {
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 12px;
+            height: 12px;
+            background: #4CAF50;
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .listening-indicator.active {
+            opacity: 1;
+            animation: pulse 1.5s infinite;
+        }
+
+        .mute-button {
+            position: absolute;
+            top: -40px;
+            right: -40px;
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .mute-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: scale(1.05);
+        }
+
+        .mute-button.muted {
+            background: rgba(244, 67, 54, 0.2);
+            border-color: rgba(244, 67, 54, 0.6);
+        }
+
+        .mute-button.muted:hover {
+            background: rgba(244, 67, 54, 0.3);
+        }
+
+        .mute-icon {
+            width: 24px;
+            height: 24px;
+            stroke: rgba(255, 255, 255, 0.8);
+            transition: stroke 0.3s ease;
+        }
+
+        .mute-button.muted .mute-icon {
+            stroke: rgba(244, 67, 54, 0.9);
+        }
+
+        .mute-button.muted .mute-line {
+            display: block !important;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: translateX(-50%) scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: translateX(-50%) scale(1.2);
+                opacity: 0.7;
+            }
+
+            100% {
+                transform: translateX(-50%) scale(1);
+                opacity: 1;
+            }
+        }
     </style>
 </head>
 
@@ -149,45 +256,23 @@
                         </div>
                     </button>
 
-                    <!-- Enhanced Coming Soon Modal -->
-                    <div id="coming-soon-modal"
+                    <!-- Voice Agent Modal -->
+                    <div id="voice-agent-modal"
                         class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden">
-                        <div
-                            class="bg-white p-10 rounded-2xl shadow-2xl text-center relative transform scale-95 opacity-0 transition-all duration-300 ease-out max-w-md mx-4">
-                            <button id="close-modal"
-                                class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl font-bold transition-colors duration-200">×</button>
-
-                            <!-- Animated Analytics Icon matching the uploaded image -->
-                            <div class="w-20 h-20 mx-auto mb-6 relative">
-                                <svg viewBox="0 0 100 100" class="w-full h-full">
-                                    <!-- Background bars -->
-                                    <rect x="15" y="60" width="8" height="30" fill="#374151" rx="4" />
-                                    <rect x="30" y="45" width="8" height="45" fill="#374151" rx="4" />
-                                    <rect x="45" y="25" width="8" height="65" fill="#1e90ff" rx="4"
-                                        class="animate-pulse" />
-                                    <rect x="60" y="35" width="8" height="55" fill="#374151" rx="4" />
-                                    <rect x="75" y="50" width="8" height="40" fill="#1e90ff" rx="4"
-                                        class="animate-pulse" />
-
-                                    <!-- Sparkles -->
-                                    <g fill="#1e90ff" class="animate-pulse">
-                                        <path d="M20 15 L22 20 L27 18 L22 23 L20 28 L18 23 L13 18 L18 20 Z" />
-                                        <path d="M8 35 L9 38 L12 37 L9 40 L8 43 L7 40 L4 37 L7 38 Z" />
-                                    </g>
+                        <div class="voice-agent-container">
+                            <div class="listening-indicator" id="listeningIndicator"></div>
+                            <button class="mute-button" id="muteButton" title="Toggle microphone">
+                                <svg class="mute-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                                    <line x1="12" y1="19" x2="12" y2="23"></line>
+                                    <line x1="8" y1="23" x2="16" y2="23"></line>
+                                    <line x1="4" y1="4" x2="20" y2="20" class="mute-line" style="display:none; stroke: red; stroke-width: 2;" />
                                 </svg>
-                            </div>
-
-                            <h2 class="text-3xl font-bold text-gray-800 mb-4">Coming Soon!</h2>
-                            <p class="text-lg text-gray-600 mb-2">Our voice agent is still under development.</p>
-                            <p class="text-lg text-gray-600 mb-6">Stay tuned for exciting updates!</p>
-
-                            <div class="flex gap-2 justify-center">
-                                <div class="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
-                                <div class="w-2 h-2 bg-purple-500 rounded-full animate-bounce"
-                                    style="animation-delay: 0.1s"></div>
-                                <div class="w-2 h-2 bg-blue-400 rounded-full animate-bounce"
-                                    style="animation-delay: 0.2s"></div>
-                            </div>
+                            </button>
+                            <canvas id="voiceCanvas" width="600" height="600"></canvas>
+                            <div class="status" id="status">Initializing voice agent...</div>
+                            <button id="close-modal" class="absolute top-4 right-4 text-white text-2xl font-bold">×</button>
                         </div>
                     </div>
                     <a href="quiz.html" id="quiz-button"
@@ -203,8 +288,9 @@
         const userInput = document.getElementById('user-input');
         const sendButton = document.getElementById('send-button');
         const micButton = document.getElementById('mic-button');
-        const modal = document.getElementById('coming-soon-modal');
+        const modal = document.getElementById('voice-agent-modal');
         const closeModal = document.getElementById('close-modal');
+        let voiceAgent;
 
         const quotes = [
             {
@@ -283,7 +369,10 @@
         micButton.addEventListener('click', () => {
             modal.classList.remove('hidden');
             setTimeout(() => {
-                modal.querySelector('div').classList.add('modal-show');
+                modal.querySelector('.voice-agent-container').classList.add('modal-show');
+                if (!voiceAgent) {
+                    voiceAgent = new AIVoiceAgent();
+                }
             }, 10);
         });
 
@@ -293,9 +382,13 @@
         });
 
         function closeModalFunction() {
-            modal.querySelector('div').classList.remove('modal-show');
+            modal.querySelector('.voice-agent-container').classList.remove('modal-show');
             setTimeout(() => {
                 modal.classList.add('hidden');
+                if (voiceAgent) {
+                    voiceAgent.destroy();
+                    voiceAgent = null;
+                }
             }, 300);
         }
 
@@ -307,6 +400,291 @@
         });
 
         document.addEventListener('DOMContentLoaded', getWelcomeMessage);
+
+        class AIVoiceAgent {
+            constructor() {
+                this.canvas = document.getElementById('voiceCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.status = document.getElementById('status');
+                this.indicator = document.getElementById('listeningIndicator');
+
+                this.width = 600;
+                this.height = 600;
+                this.canvas.width = this.width;
+                this.canvas.height = this.height;
+
+                this.center = { x: this.width / 2, y: this.height / 2 };
+                this.baseRadius = this.width * 0.35;
+                this.currentRadius = this.baseRadius;
+                this.targetRadius = this.baseRadius;
+
+                this.particles = [];
+                this.numParticles = 800;
+                this.audioLevel = 0;
+                this.smoothedAudioLevel = 0;
+                this.isListening = false;
+
+                this.audioContext = null;
+                this.analyser = null;
+                this.dataArray = null;
+                this.silenceThreshold = 30;
+                this.voiceThreshold = 50;
+                this.silenceTimer = 0;
+                this.maxSilenceTime = 60;
+                this.isMuted = false;
+                this.mediaStream = null;
+                this.animationFrameId = null;
+
+                this.init();
+            }
+
+            init() {
+                this.createParticles();
+                this.setupAudio();
+                this.setupMuteButton();
+                this.animate();
+            }
+
+            createParticles() {
+                for (let i = 0; i < this.numParticles; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const distance = Math.random() * this.baseRadius * 0.8;
+                    const x = this.center.x + Math.cos(angle) * distance;
+                    const y = this.center.y + Math.sin(angle) * distance;
+
+                    this.particles.push({
+                        x: x,
+                        y: y,
+                        baseX: x,
+                        baseY: y,
+                        vx: (Math.random() - 0.5) * 0.3,
+                        vy: (Math.random() - 0.5) * 0.3,
+                        size: Math.random() * 1.5 + 0.5,
+                        alpha: Math.random() * 0.8 + 0.2,
+                        phase: Math.random() * Math.PI * 2,
+                        frequency: Math.random() * 0.02 + 0.01
+                    });
+                }
+            }
+
+            async setupAudio() {
+                try {
+                    this.mediaStream = await navigator.mediaDevices.getUserMedia({
+                        audio: {
+                            echoCancellation: true,
+                            noiseSuppression: true,
+                            autoGainControl: true
+                        }
+                    });
+
+                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    this.analyser = this.audioContext.createAnalyser();
+                    const source = this.audioContext.createMediaStreamSource(this.mediaStream);
+
+                    source.connect(this.analyser);
+                    this.analyser.fftSize = 512;
+                    this.analyser.smoothingTimeConstant = 0.8;
+
+                    const bufferLength = this.analyser.frequencyBinCount;
+                    this.dataArray = new Uint8Array(bufferLength);
+
+                    this.status.textContent = 'Voice agent ready - Start speaking';
+
+                } catch (err) {
+                    console.error('Microphone access denied:', err);
+                    this.status.textContent = 'Microphone access required';
+                }
+            }
+
+            setupMuteButton() {
+                const muteButton = document.getElementById('muteButton');
+
+                muteButton.addEventListener('click', () => {
+                    this.toggleMute();
+                });
+            }
+
+            toggleMute() {
+                this.isMuted = !this.isMuted;
+                const muteButton = document.getElementById('muteButton');
+                const muteLine = muteButton.querySelector('.mute-line');
+
+                if (this.isMuted) {
+                    // Mute the microphone
+                    if (this.mediaStream) {
+                        this.mediaStream.getAudioTracks().forEach(track => {
+                            track.enabled = false;
+                        });
+                    }
+                    muteButton.classList.add('muted');
+                    muteLine.style.display = 'block';
+                    this.status.textContent = 'Microphone muted';
+                    this.isListening = false;
+                    this.indicator.classList.remove('active');
+                } else {
+                    // Unmute the microphone
+                    if (this.mediaStream) {
+                        this.mediaStream.getAudioTracks().forEach(track => {
+                            track.enabled = true;
+                        });
+                    }
+                    muteButton.classList.remove('muted');
+                    muteLine.style.display = 'none';
+                    this.status.textContent = 'Voice agent ready - Start speaking';
+                }
+            }
+
+            analyzeAudio() {
+                if (!this.analyser || this.isMuted) {
+                    this.audioLevel = 0;
+                    this.isListening = false;
+                    this.indicator.classList.remove('active');
+                    return;
+                }
+
+                this.analyser.getByteFrequencyData(this.dataArray);
+
+                let speechSum = 0;
+                const speechStart = Math.floor(85 / (this.audioContext.sampleRate / 2) * this.dataArray.length);
+                const speechEnd = Math.floor(8000 / (this.audioContext.sampleRate / 2) * this.dataArray.length);
+
+                for (let i = speechStart; i < speechEnd && i < this.dataArray.length; i++) {
+                    speechSum += this.dataArray[i];
+                }
+
+                this.audioLevel = speechSum / (speechEnd - speechStart);
+
+                if (this.audioLevel > this.voiceThreshold) {
+                    this.isListening = true;
+                    this.silenceTimer = 0;
+                    this.indicator.classList.add('active');
+                    if (!this.isMuted) {
+                        this.status.textContent = 'Listening...';
+                    }
+                } else if (this.audioLevel < this.silenceThreshold) {
+                    this.silenceTimer++;
+                    if (this.silenceTimer > this.maxSilenceTime) {
+                        this.isListening = false;
+                        this.indicator.classList.remove('active');
+                        if (!this.isMuted) {
+                            this.status.textContent = 'Voice agent ready - Start speaking';
+                        }
+                    }
+                }
+
+                const targetLevel = this.isListening ? this.audioLevel / 255 : 0;
+                this.smoothedAudioLevel += (targetLevel - this.smoothedAudioLevel) * 0.15;
+                this.targetRadius = this.baseRadius + (this.smoothedAudioLevel * 80);
+            }
+
+            updateParticles() {
+                const currentTime = Date.now() * 0.001;
+                this.currentRadius += (this.targetRadius - this.currentRadius) * 0.1;
+
+                for (let i = 0; i < this.particles.length; i++) {
+                    const particle = this.particles[i];
+
+                    particle.x += particle.vx;
+                    particle.y += particle.vy;
+
+                    if (this.isListening && !this.isMuted) {
+                        const waveAmplitude = this.smoothedAudioLevel * 15;
+                        const wave = Math.sin(currentTime * 3 + particle.phase) * waveAmplitude;
+                        const distFromCenter = Math.sqrt(
+                            (particle.x - this.center.x) ** 2 +
+                            (particle.y - this.center.y) ** 2
+                        );
+
+                        if (distFromCenter > 0) {
+                            const normalX = (particle.x - this.center.x) / distFromCenter;
+                            const normalY = (particle.y - this.center.y) / distFromCenter;
+                            particle.x += normalX * wave;
+                            particle.y += normalY * wave;
+                        }
+                    }
+
+                    const dx = particle.x - this.center.x;
+                    const dy = particle.y - this.center.y;
+                    const distanceFromCenter = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distanceFromCenter > this.currentRadius) {
+                        const angle = Math.atan2(dy, dx);
+                        particle.x = this.center.x + Math.cos(angle) * (this.currentRadius - 2);
+                        particle.y = this.center.y + Math.sin(angle) * (this.currentRadius - 2);
+
+                        const normalX = dx / distanceFromCenter;
+                        const normalY = dy / distanceFromCenter;
+                        const dotProduct = particle.vx * normalX + particle.vy * normalY;
+                        particle.vx -= 2 * dotProduct * normalX;
+                        particle.vy -= 2 * dotProduct * normalY;
+
+                        particle.vx += (Math.random() - 0.5) * 0.1;
+                        particle.vy += (Math.random() - 0.5) * 0.1;
+                    }
+
+                    if (Math.abs(particle.vx) < 0.1) particle.vx += (Math.random() - 0.5) * 0.2;
+                    if (Math.abs(particle.vy) < 0.1) particle.vy += (Math.random() - 0.5) * 0.2;
+
+                    const maxVelocity = 2;
+                    const velocity = Math.sqrt(particle.vx ** 2 + particle.vy ** 2);
+                    if (velocity > maxVelocity) {
+                        particle.vx = (particle.vx / velocity) * maxVelocity;
+                        particle.vy = (particle.vy / velocity) * maxVelocity;
+                    }
+
+                    const targetAlpha = (this.isListening && !this.isMuted) ?
+                        0.7 + this.smoothedAudioLevel * 0.3 :
+                        0.4 + Math.sin(currentTime + particle.phase) * 0.2;
+                    particle.alpha += (targetAlpha - particle.alpha) * 0.1;
+                }
+            }
+
+            draw() {
+                this.ctx.fillStyle = 'rgba(15, 22, 34, 0.08)';
+                this.ctx.fillRect(0, 0, this.width, this.height);
+
+                if (this.isListening && !this.isMuted && this.smoothedAudioLevel > 0.1) {
+                    this.ctx.beginPath();
+                    this.ctx.arc(this.center.x, this.center.y, this.currentRadius, 0, Math.PI * 2);
+                    this.ctx.strokeStyle = `rgba(255, 255, 255, ${this.smoothedAudioLevel * 0.3})`;
+                    this.ctx.lineWidth = 1;
+                    this.ctx.stroke();
+                }
+
+                for (const particle of this.particles) {
+                    this.ctx.beginPath();
+                    this.ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                    this.ctx.fillStyle = `rgba(255, 255, 255, ${particle.alpha})`;
+                    this.ctx.fill();
+
+                    if (this.isListening && !this.isMuted) {
+                        this.ctx.shadowBlur = 8;
+                        this.ctx.shadowColor = 'rgba(255, 255, 255, 0.5)';
+                        this.ctx.fill();
+                        this.ctx.shadowBlur = 0;
+                    }
+                }
+            }
+
+            animate() {
+                this.analyzeAudio();
+                this.updateParticles();
+                this.draw();
+                this.animationFrameId = requestAnimationFrame(() => this.animate());
+            }
+
+            destroy() {
+                if (this.animationFrameId) {
+                    cancelAnimationFrame(this.animationFrameId);
+                }
+                if (this.mediaStream) {
+                    this.mediaStream.getTracks().forEach(track => track.stop());
+                }
+                if (this.audioContext) {
+                    this.audioContext.close();
+                }
+            }
+        }
     </script>
 </body>
 
